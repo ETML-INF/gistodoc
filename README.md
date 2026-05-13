@@ -1,4 +1,4 @@
-# Projectil - Project Time Lapse
+# Gistodoc - Git Stories to Documents
 
 Une application qui exporte les issues Github dans des documents
 
