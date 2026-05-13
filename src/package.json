@@ -12,7 +12,7 @@
   },
   "build": {
     "appId": "ch.github.gistodoc",
-    "productName": "Git Stories to md",
+    "productName": "gistodoc",
     "files": [
       "main.js",
       "preload.js",
