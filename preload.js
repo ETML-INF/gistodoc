@@ -3,8 +3,8 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electronAPI', {
-  exportMarkdown: (url, pat) =>
-    ipcRenderer.invoke('export-markdown', { url, pat }),
+  exportProject: (url, pat, format) =>
+    ipcRenderer.invoke('export', { url, pat, format }),
 
   onProgress: (callback) =>
     ipcRenderer.on('fetch-progress', (_event, msg) => callback(msg)),

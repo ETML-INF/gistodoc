@@ -3,9 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Git Stories to Markdown</title>
+    <title>Git Stories to Document</title>
     <style>
-      * { box-sizing: border-box; margin: 0; padding: 0; }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
       body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -27,7 +31,12 @@
         flex-shrink: 0;
         gap: 10px;
       }
-      .header h1 { font-size: 15px; font-weight: 600; color: #f0f6fc; flex: 1; }
+      .header h1 {
+        font-size: 15px;
+        font-weight: 600;
+        color: #f0f6fc;
+        flex: 1;
+      }
 
       /* ── Status bar ── */
       .status-bar {
@@ -42,18 +51,27 @@
         flex-shrink: 0;
         min-height: 30px;
       }
-      .status-bar.error  { color: #f85149; }
-      .status-bar.success { color: #3fb950; }
+      .status-bar.error {
+        color: #f85149;
+      }
+      .status-bar.success {
+        color: #3fb950;
+      }
       .status-bar.loading::before {
         content: "";
         flex-shrink: 0;
-        width: 10px; height: 10px;
+        width: 10px;
+        height: 10px;
         border: 2px solid #388bfd;
         border-top-color: transparent;
         border-radius: 50%;
         animation: spin 0.8s linear infinite;
       }
-      @keyframes spin { to { transform: rotate(360deg); } }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
 
       /* ── Main content ── */
       .content {
@@ -87,7 +105,9 @@
         width: 100%;
         max-width: 500px;
       }
-      .result-box.visible { display: block; }
+      .result-box.visible {
+        display: block;
+      }
 
       .result-title {
         font-size: 13px;
@@ -105,7 +125,7 @@
       .btn-export {
         background: #238636;
         color: #fff;
-        border: 1px solid rgba(240,246,252,0.1);
+        border: 1px solid rgba(240, 246, 252, 0.1);
         border-radius: 6px;
         padding: 8px 20px;
         font-size: 13px;
@@ -113,7 +133,9 @@
         cursor: pointer;
         transition: background 0.15s;
       }
-      .btn-export:hover { background: #2ea043; }
+      .btn-export:hover {
+        background: #2ea043;
+      }
       .btn-export:disabled {
         background: #21262d;
         color: #484f58;
@@ -125,12 +147,14 @@
         display: none;
         position: fixed;
         inset: 0;
-        background: rgba(0,0,0,0.7);
+        background: rgba(0, 0, 0, 0.7);
         z-index: 100;
         align-items: center;
         justify-content: center;
       }
-      .modal-bg.visible { display: flex; }
+      .modal-bg.visible {
+        display: flex;
+      }
 
       .modal {
         background: #161b22;
@@ -140,8 +164,17 @@
         width: 500px;
         max-width: 92vw;
       }
-      .modal h2 { font-size: 16px; color: #f0f6fc; margin-bottom: 8px; }
-      .modal p  { font-size: 13px; color: #8b949e; margin-bottom: 18px; line-height: 1.5; }
+      .modal h2 {
+        font-size: 16px;
+        color: #f0f6fc;
+        margin-bottom: 8px;
+      }
+      .modal p {
+        font-size: 13px;
+        color: #8b949e;
+        margin-bottom: 18px;
+        line-height: 1.5;
+      }
 
       .modal input[type="text"],
       .modal input[type="password"] {
@@ -153,12 +186,14 @@
         padding: 8px 12px;
         font-size: 13px;
         outline: none;
-        transition: border-color 0.15s, box-shadow 0.15s;
+        transition:
+          border-color 0.15s,
+          box-shadow 0.15s;
         margin-bottom: 8px;
       }
       .modal input:focus {
         border-color: #388bfd;
-        box-shadow: 0 0 0 3px rgba(56,139,253,0.12);
+        box-shadow: 0 0 0 3px rgba(56, 139, 253, 0.12);
       }
 
       .modal-actions {
@@ -168,44 +203,54 @@
         margin-top: 4px;
       }
       .btn-primary {
-        background: #238636; color: #fff;
-        border: 1px solid rgba(240,246,252,0.1);
-        border-radius: 6px; padding: 7px 18px;
-        font-size: 13px; font-weight: 500;
-        cursor: pointer; transition: background 0.15s;
+        background: #238636;
+        color: #fff;
+        border: 1px solid rgba(240, 246, 252, 0.1);
+        border-radius: 6px;
+        padding: 7px 18px;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.15s;
       }
-      .btn-primary:hover { background: #2ea043; }
+      .btn-primary:hover {
+        background: #2ea043;
+      }
       .btn-secondary {
-        background: transparent; color: #8b949e;
-        border: 1px solid #30363d; border-radius: 6px;
-        padding: 7px 14px; font-size: 13px; cursor: pointer;
-        transition: border-color 0.15s, color 0.15s;
+        background: transparent;
+        color: #8b949e;
+        border: 1px solid #30363d;
+        border-radius: 6px;
+        padding: 7px 14px;
+        font-size: 13px;
+        cursor: pointer;
+        transition:
+          border-color 0.15s,
+          color 0.15s;
       }
-      .btn-secondary:hover { border-color: #8b949e; color: #c9d1d9; }
+      .btn-secondary:hover {
+        border-color: #8b949e;
+        color: #c9d1d9;
+      }
     </style>
   </head>
   <body>
     <div class="header">
-      <h1>Git Stories to Markdown</h1>
-      <button class="btn-export" id="newBtn" onclick="showUrlModal()" style="display:none">
-        Nouveau projet
-      </button>
+      <h1>Git Stories to Document</h1>
     </div>
 
     <div class="status-bar" id="statusBar">Prêt.</div>
 
     <div class="content">
       <div class="icon">📄</div>
-      <p class="idle-msg" id="idleMsg">Charge un projet GitHub pour exporter ses issues en Markdown.</p>
+      <p class="idle-msg" id="idleMsg">Charge un projet GitHub pour exporter ses issues dans un document (markdown ou Word).</p>
 
       <div class="result-box" id="resultBox">
         <div class="result-title" id="resultTitle"></div>
         <div class="result-path" id="resultPath"></div>
       </div>
 
-      <button class="btn-export" id="startBtn" onclick="showUrlModal()">
-        Charger un projet
-      </button>
+      <button class="btn-export" id="startBtn" onclick="showUrlModal()">Charger un projet</button>
     </div>
 
     <!-- Modal 1 : URL du projet -->
@@ -234,107 +279,114 @@
           type="password"
           id="patInput"
           placeholder="ghp_…"
-          onkeydown="if (event.key === 'Enter') confirmPat();"
+          onkeydown="if (event.key === 'Enter') confirmPat('docx');"
         />
         <div class="modal-actions">
-          <button class="btn-secondary" onclick="showUrlModal()">← Retour</button>
-          <button class="btn-primary" onclick="confirmPat()">Exporter</button>
+          <button class="btn-primary" onclick="confirmPat('md')">Markdown</button>
+          <button class="btn-primary" onclick="confirmPat('docx')">Word (.docx)</button>
         </div>
       </div>
     </div>
 
     <script>
       (() => {
-        'use strict';
+        "use strict";
 
         // ── Helpers ───────────────────────────────────────────────────────────
-        function setStatus(msg, cls = '') {
-          const el = document.getElementById('statusBar');
+        function setStatus(msg, cls = "") {
+          const el = document.getElementById("statusBar");
           el.textContent = msg;
-          el.className = 'status-bar' + (cls ? ' ' + cls : '');
+          el.className = "status-bar" + (cls ? " " + cls : "");
         }
 
         function closeAllModals() {
-          document.querySelectorAll('.modal-bg').forEach(m => m.classList.remove('visible'));
+          document.querySelectorAll(".modal-bg").forEach((m) => m.classList.remove("visible"));
         }
 
         // ── Modal flow ────────────────────────────────────────────────────────
         function showUrlModal() {
           closeAllModals();
-          const input = document.getElementById('urlInput');
-          input.value = localStorage.getItem('lastUrl') || '';
-          document.getElementById('urlModal').classList.add('visible');
+          const input = document.getElementById("urlInput");
+          input.value = localStorage.getItem("lastUrl") || "";
+          document.getElementById("urlModal").classList.add("visible");
           setTimeout(() => input.focus(), 50);
         }
 
         function confirmUrl() {
-          const url = document.getElementById('urlInput').value.trim();
-          if (!url) { document.getElementById('urlInput').focus(); return; }
-          localStorage.setItem('lastUrl', url);
+          const url = document.getElementById("urlInput").value.trim();
+          if (!url) {
+            document.getElementById("urlInput").focus();
+            return;
+          }
+          localStorage.setItem("lastUrl", url);
           closeAllModals();
           showPatModal();
         }
 
         function showPatModal() {
           closeAllModals();
-          const input = document.getElementById('patInput');
-          input.value = localStorage.getItem('lastPat') || '';
-          document.getElementById('patModal').classList.add('visible');
+          const input = document.getElementById("patInput");
+          input.value = localStorage.getItem("lastPat") || "";
+          document.getElementById("patModal").classList.add("visible");
           setTimeout(() => input.focus(), 50);
         }
 
-        function confirmPat() {
-          const pat = document.getElementById('patInput').value.trim();
-          if (!pat) { document.getElementById('patInput').focus(); return; }
-          localStorage.setItem('lastPat', pat);
+        function confirmPat(format) {
+          const pat = document.getElementById("patInput").value.trim();
+          if (!pat) {
+            document.getElementById("patInput").focus();
+            return;
+          }
+          localStorage.setItem("lastPat", pat);
           closeAllModals();
-          runExport(localStorage.getItem('lastUrl'), pat);
+          runExport(localStorage.getItem("lastUrl"), pat, format);
         }
 
         // ── Export ────────────────────────────────────────────────────────────
-        async function runExport(url, pat) {
-          document.getElementById('startBtn').style.display = 'none';
-          document.getElementById('newBtn').style.display = 'none';
-          document.getElementById('resultBox').classList.remove('visible');
-          document.getElementById('idleMsg').style.display = '';
-          setStatus('Chargement…', 'loading');
+        async function runExport(url, pat, format) {
+          document.getElementById("startBtn").style.display = "none";
+          document.getElementById("resultBox").classList.remove("visible");
+          document.getElementById("idleMsg").style.display = "";
+          setStatus("Chargement…", "loading");
 
-          window.electronAPI.onProgress(msg => setStatus(msg, 'loading'));
+          window.electronAPI.onProgress((msg) => setStatus(msg, "loading"));
 
           try {
-            const result = await window.electronAPI.exportMarkdown(url, pat);
+            const result = await window.electronAPI.exportProject(url, pat, format);
 
             if (result.success) {
-              setStatus(`${result.count} issue${result.count !== 1 ? 's' : ''} exportée${result.count !== 1 ? 's' : ''}.`, 'success');
-              document.getElementById('idleMsg').style.display = 'none';
-              document.getElementById('resultTitle').textContent =
-                `✓ ${result.count} issue${result.count !== 1 ? 's' : ''} exportée${result.count !== 1 ? 's' : ''}`;
-              document.getElementById('resultPath').textContent = result.filePath;
-              document.getElementById('resultBox').classList.add('visible');
+              setStatus(
+                `${result.count} issue${result.count !== 1 ? "s" : ""} exportée${result.count !== 1 ? "s" : ""}.`,
+                "success"
+              );
+              document.getElementById("idleMsg").style.display = "none";
+              document.getElementById("resultTitle").textContent =
+                `✓ ${result.count} issue${result.count !== 1 ? "s" : ""} exportée${result.count !== 1 ? "s" : ""}`;
+              document.getElementById("resultPath").textContent = result.filePath;
+              document.getElementById("resultBox").classList.add("visible");
             } else if (result.canceled) {
-              setStatus('Export annulé.', '');
+              setStatus("Export annulé.", "");
             } else {
-              setStatus(`Erreur : ${result.error}`, 'error');
+              setStatus(`Erreur : ${result.error}`, "error");
               showUrlModal();
             }
           } catch (err) {
-            setStatus(`Erreur : ${err.message}`, 'error');
+            setStatus(`Erreur : ${err.message}`, "error");
             showUrlModal();
           } finally {
             window.electronAPI.removeProgressListeners();
-            document.getElementById('startBtn').style.display = '';
-            document.getElementById('newBtn').style.display = '';
+            document.getElementById("startBtn").style.display = "";
           }
         }
 
         // Expose to HTML attributes
         window.showUrlModal = showUrlModal;
-        window.confirmUrl  = confirmUrl;
+        window.confirmUrl = confirmUrl;
         window.showPatModal = showPatModal;
-        window.confirmPat  = confirmPat;
+        window.confirmPat = confirmPat;
 
         // ── Auto-start ────────────────────────────────────────────────────────
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener("DOMContentLoaded", () => {
           showUrlModal();
         });
       })();

@@ -1,7 +1,7 @@
 {
   "name": "gistodoc",
   "version": "1.0.0",
-  "description": "Exporter les github issues en format markdown",
+  "description": "Exporter les github issues en format markdown ou Word",
   "main": "main.js",
   "scripts": {
     "start": "ELECTRON_RUN_AS_NODE= electron .",
@@ -46,6 +46,9 @@
       "oneClick": true,
       "perMachine": false
     }
+  },
+  "dependencies": {
+    "docx": "^8.0.0"
   },
   "devDependencies": {
     "electron": "^42.0.1",
