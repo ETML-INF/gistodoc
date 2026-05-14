@@ -250,40 +250,32 @@
         <div class="result-path" id="resultPath"></div>
       </div>
 
-      <button class="btn-export" id="startBtn" onclick="showUrlModal()">Charger un projet</button>
+      <button class="btn-export" id="startBtn" onclick="showConfigModal()">Charger un projet</button>
     </div>
 
-    <!-- Modal 1 : URL du projet -->
-    <div class="modal-bg" id="urlModal">
+    <!-- Modale unique de configuration -->
+    <div class="modal-bg" id="configModal">
       <div class="modal">
-        <h2>URL du projet GitHub</h2>
-        <p>Format : https://github.com/orgs/ORG/projects/N</p>
+        <h2>Exporter les issues GitHub</h2>
         <input
           type="text"
           id="urlInput"
-          placeholder="https://github.com/orgs/monorg/projects/1"
-          onkeydown="if (event.key === 'Enter') confirmUrl();"
+          placeholder="URL du projet — https://github.com/orgs/ORG/projects/N"
         />
-        <div class="modal-actions">
-          <button class="btn-primary" onclick="confirmUrl()">Suivant →</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal 2 : PAT GitHub -->
-    <div class="modal-bg" id="patModal">
-      <div class="modal">
-        <h2>Personal Access Token GitHub</h2>
-        <p>Scopes requis : <b>repo</b> et <b>read:project</b></p>
         <input
           type="password"
           id="patInput"
-          placeholder="ghp_…"
-          onkeydown="if (event.key === 'Enter') confirmPat('docx');"
+          placeholder="Personal Access Token (ghp_…)"
+        />
+        <input
+          type="text"
+          id="tagInput"
+          placeholder="Label GitHub (optionnel — filtre les issues)"
+          onkeydown="if (event.key === 'Enter') confirmExport('docx');"
         />
         <div class="modal-actions">
-          <button class="btn-primary" onclick="confirmPat('md')">Markdown</button>
-          <button class="btn-primary" onclick="confirmPat('docx')">Word (.docx)</button>
+          <button class="btn-primary" onclick="confirmExport('md')">Markdown</button>
+          <button class="btn-primary" onclick="confirmExport('docx')">Word (.docx)</button>
         </div>
       </div>
     </div>
@@ -303,47 +295,31 @@
           document.querySelectorAll(".modal-bg").forEach((m) => m.classList.remove("visible"));
         }
 
-        // ── Modal flow ────────────────────────────────────────────────────────
-        function showUrlModal() {
+        // ── Modal ─────────────────────────────────────────────────────────────
+        function showConfigModal() {
           closeAllModals();
-          const input = document.getElementById("urlInput");
-          input.value = localStorage.getItem("lastUrl") || "";
-          document.getElementById("urlModal").classList.add("visible");
-          setTimeout(() => input.focus(), 50);
+          document.getElementById("urlInput").value = localStorage.getItem("lastUrl") || "";
+          document.getElementById("patInput").value = localStorage.getItem("lastPat") || "";
+          document.getElementById("tagInput").value = localStorage.getItem("lastTag") || "";
+          document.getElementById("configModal").classList.add("visible");
+          setTimeout(() => document.getElementById("urlInput").focus(), 50);
         }
 
-        function confirmUrl() {
+        function confirmExport(format) {
           const url = document.getElementById("urlInput").value.trim();
-          if (!url) {
-            document.getElementById("urlInput").focus();
-            return;
-          }
-          localStorage.setItem("lastUrl", url);
-          closeAllModals();
-          showPatModal();
-        }
-
-        function showPatModal() {
-          closeAllModals();
-          const input = document.getElementById("patInput");
-          input.value = localStorage.getItem("lastPat") || "";
-          document.getElementById("patModal").classList.add("visible");
-          setTimeout(() => input.focus(), 50);
-        }
-
-        function confirmPat(format) {
           const pat = document.getElementById("patInput").value.trim();
-          if (!pat) {
-            document.getElementById("patInput").focus();
-            return;
-          }
+          const tag = document.getElementById("tagInput").value.trim();
+          if (!url) { document.getElementById("urlInput").focus(); return; }
+          if (!pat) { document.getElementById("patInput").focus(); return; }
+          localStorage.setItem("lastUrl", url);
           localStorage.setItem("lastPat", pat);
+          localStorage.setItem("lastTag", tag);
           closeAllModals();
-          runExport(localStorage.getItem("lastUrl"), pat, format);
+          runExport(url, pat, tag, format);
         }
 
         // ── Export ────────────────────────────────────────────────────────────
-        async function runExport(url, pat, format) {
+        async function runExport(url, pat, tag, format) {
           document.getElementById("startBtn").style.display = "none";
           document.getElementById("resultBox").classList.remove("visible");
           document.getElementById("idleMsg").style.display = "";
@@ -352,7 +328,7 @@
           window.electronAPI.onProgress((msg) => setStatus(msg, "loading"));
 
           try {
-            const result = await window.electronAPI.exportProject(url, pat, format);
+            const result = await window.electronAPI.exportProject(url, pat, tag, format);
 
             if (result.success) {
               setStatus(
@@ -368,11 +344,11 @@
               setStatus("Export annulé.", "");
             } else {
               setStatus(`Erreur : ${result.error}`, "error");
-              showUrlModal();
+              showConfigModal();
             }
           } catch (err) {
             setStatus(`Erreur : ${err.message}`, "error");
-            showUrlModal();
+            showConfigModal();
           } finally {
             window.electronAPI.removeProgressListeners();
             document.getElementById("startBtn").style.display = "";
@@ -380,14 +356,12 @@
         }
 
         // Expose to HTML attributes
-        window.showUrlModal = showUrlModal;
-        window.confirmUrl = confirmUrl;
-        window.showPatModal = showPatModal;
-        window.confirmPat = confirmPat;
+        window.showConfigModal = showConfigModal;
+        window.confirmExport = confirmExport;
 
         // ── Auto-start ────────────────────────────────────────────────────────
         document.addEventListener("DOMContentLoaded", () => {
-          showUrlModal();
+          showConfigModal();
         });
       })();
     </script>

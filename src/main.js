@@ -123,6 +123,7 @@ const ITEM_FRAGMENT = `fragment ItemFields on ProjectV2Item {
   id isArchived
   content { ... on Issue {
     number title body
+    labels(first: 20) { nodes { name } }
     repository { nameWithOwner }
   }}
 }`;
@@ -175,14 +176,23 @@ async function fetchProjectItems(pat, ownerTypes, owner, number) {
 
 // ── Fetch orchestrator ────────────────────────────────────────────────────────
 
-async function fetchProjectData(url, pat, onProgress) {
+async function fetchProjectData(url, pat, tag, onProgress) {
   const parsed = parseProjectUrl(url);
 
   onProgress('Récupération du projet GitHub…');
   const { project, allItems } = await fetchProjectItems(pat, parsed.ownerTypes, parsed.owner, parsed.number);
 
-  const validItems = allItems.filter((item) => !item.isArchived && item.content?.number);
-  onProgress(`"${project.title}" — ${validItems.length} issues`);
+  const normalizedTag = tag?.trim().toLowerCase() || '';
+  const validItems = allItems.filter((item) => {
+    if (item.isArchived || !item.content?.number) return false;
+    if (normalizedTag) {
+      const labels = item.content.labels?.nodes?.map((l) => l.name.toLowerCase()) ?? [];
+      return labels.includes(normalizedTag);
+    }
+    return true;
+  });
+  const tagNote = normalizedTag ? ` (label: "${tag}")` : '';
+  onProgress(`"${project.title}" — ${validItems.length} issues${tagNote}`);
 
   const issues = validItems.map((item) => {
     const c = item.content;
@@ -376,9 +386,9 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
-  ipcMain.handle('export', async (event, { url, pat, format }) => {
+  ipcMain.handle('export', async (event, { url, pat, tag, format }) => {
     try {
-      const data = await fetchProjectData(url, pat, (msg) => {
+      const data = await fetchProjectData(url, pat, tag, (msg) => {
         console.log(' ', msg);
         event.sender.send('fetch-progress', msg);
       });

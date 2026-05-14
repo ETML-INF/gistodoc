@@ -1,6 +1,6 @@
 {
   "name": "gistodoc",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Exporter les github issues en format markdown ou Word",
   "main": "main.js",
   "scripts": {
