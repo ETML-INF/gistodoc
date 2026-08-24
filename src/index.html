@@ -38,41 +38,6 @@
         flex: 1;
       }
 
-      /* ── Status bar ── */
-      .status-bar {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 6px 20px;
-        font-size: 12px;
-        color: #8b949e;
-        background: #0d1117;
-        border-bottom: 1px solid #21262d;
-        flex-shrink: 0;
-        min-height: 30px;
-      }
-      .status-bar.error {
-        color: #f85149;
-      }
-      .status-bar.success {
-        color: #3fb950;
-      }
-      .status-bar.loading::before {
-        content: "";
-        flex-shrink: 0;
-        width: 10px;
-        height: 10px;
-        border: 2px solid #388bfd;
-        border-top-color: transparent;
-        border-radius: 50%;
-        animation: spin 0.8s linear infinite;
-      }
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
-        }
-      }
-
       /* ── Main content ── */
       .content {
         flex: 1;
@@ -80,49 +45,55 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 24px;
+        gap: 20px;
         padding: 40px 20px;
-      }
-
-      .icon {
-        font-size: 48px;
-        line-height: 1;
-        opacity: 0.3;
+        overflow-y: auto;
       }
 
       .idle-msg {
-        font-size: 14px;
-        color: #484f58;
-        text-align: center;
-      }
-
-      .result-box {
-        display: none;
-        background: #161b22;
-        border: 1px solid #30363d;
-        border-radius: 8px;
-        padding: 20px 24px;
-        width: 100%;
-        max-width: 500px;
-      }
-      .result-box.visible {
-        display: block;
-      }
-
-      .result-title {
         font-size: 13px;
-        font-weight: 600;
-        color: #3fb950;
-        margin-bottom: 8px;
-      }
-      .result-path {
-        font-size: 12px;
         color: #8b949e;
-        word-break: break-all;
+        text-align: center;
+        max-width: 440px;
         line-height: 1.5;
       }
 
+      /* ── Form ── */
+      .form {
+        width: 100%;
+        max-width: 440px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .form input[type="text"],
+      .form input[type="password"] {
+        width: 100%;
+        background: #161b22;
+        border: 1px solid #30363d;
+        border-radius: 6px;
+        color: #c9d1d9;
+        padding: 9px 12px;
+        font-size: 13px;
+        outline: none;
+        transition:
+          border-color 0.15s,
+          box-shadow 0.15s;
+        margin-bottom: 10px;
+      }
+      .form input:focus {
+        border-color: #388bfd;
+        box-shadow: 0 0 0 3px rgba(56, 139, 253, 0.12);
+      }
+
+      .actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 4px;
+      }
+
       .btn-export {
+        flex: 1;
         background: #238636;
         color: #fff;
         border: 1px solid rgba(240, 246, 252, 0.1);
@@ -142,95 +113,45 @@
         cursor: default;
       }
 
-      /* ── Modals ── */
-      .modal-bg {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.7);
-        z-index: 100;
-        align-items: center;
-        justify-content: center;
-      }
-      .modal-bg.visible {
-        display: flex;
-      }
-
-      .modal {
-        background: #161b22;
-        border: 1px solid #30363d;
-        border-radius: 10px;
-        padding: 28px;
-        width: 500px;
-        max-width: 92vw;
-      }
-      .modal h2 {
-        font-size: 16px;
-        color: #f0f6fc;
-        margin-bottom: 8px;
-      }
-      .modal p {
-        font-size: 13px;
-        color: #8b949e;
-        margin-bottom: 18px;
-        line-height: 1.5;
-      }
-
-      .modal input[type="text"],
-      .modal input[type="password"] {
+      /* ── Status / feedback ── */
+      .status-bar {
         width: 100%;
-        background: #0d1117;
-        border: 1px solid #30363d;
-        border-radius: 6px;
-        color: #c9d1d9;
-        padding: 8px 12px;
-        font-size: 13px;
-        outline: none;
-        transition:
-          border-color 0.15s,
-          box-shadow 0.15s;
-        margin-bottom: 8px;
-      }
-      .modal input:focus {
-        border-color: #388bfd;
-        box-shadow: 0 0 0 3px rgba(56, 139, 253, 0.12);
-      }
-
-      .modal-actions {
+        max-width: 440px;
         display: flex;
-        justify-content: flex-end;
+        align-items: center;
         gap: 8px;
-        margin-top: 4px;
-      }
-      .btn-primary {
-        background: #238636;
-        color: #fff;
-        border: 1px solid rgba(240, 246, 252, 0.1);
-        border-radius: 6px;
-        padding: 7px 18px;
-        font-size: 13px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: background 0.15s;
-      }
-      .btn-primary:hover {
-        background: #2ea043;
-      }
-      .btn-secondary {
-        background: transparent;
+        padding: 8px 12px;
+        font-size: 12px;
         color: #8b949e;
-        border: 1px solid #30363d;
-        border-radius: 6px;
-        padding: 7px 14px;
-        font-size: 13px;
-        cursor: pointer;
-        transition:
-          border-color 0.15s,
-          color 0.15s;
+        min-height: 30px;
+        word-break: break-all;
       }
-      .btn-secondary:hover {
-        border-color: #8b949e;
-        color: #c9d1d9;
+      .status-bar:empty {
+        display: none;
+      }
+      .status-bar.error {
+        color: #ffa198;
+        background: rgba(248, 81, 73, 0.15);
+        border-radius: 6px;
+        font-weight: 600;
+      }
+      .status-bar.success {
+        color: #3fb950;
+      }
+      .status-bar.loading::before {
+        content: "";
+        flex-shrink: 0;
+        width: 10px;
+        height: 10px;
+        border: 2px solid #388bfd;
+        border-top-color: transparent;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
       }
     </style>
   </head>
@@ -239,45 +160,21 @@
       <h1>Git Stories to Document</h1>
     </div>
 
-    <div class="status-bar" id="statusBar">Prêt.</div>
-
     <div class="content">
-      <div class="icon">📄</div>
-      <p class="idle-msg" id="idleMsg">Charge un projet GitHub pour exporter ses issues dans un document (markdown ou Word).</p>
-
-      <div class="result-box" id="resultBox">
-        <div class="result-title" id="resultTitle"></div>
-        <div class="result-path" id="resultPath"></div>
-      </div>
-
-      <button class="btn-export" id="startBtn" onclick="showConfigModal()">Charger un projet</button>
-    </div>
-
-    <!-- Modale unique de configuration -->
-    <div class="modal-bg" id="configModal">
-      <div class="modal">
-        <h2>Exporter les issues GitHub</h2>
-        <input
-          type="text"
-          id="urlInput"
-          placeholder="URL du projet — https://github.com/orgs/ORG/projects/N"
-        />
+      <div class="form">
+        <input type="text" id="urlInput" placeholder="URL du dépôt — https://github.com/OWNER/REPO" />
         <input
           type="password"
           id="patInput"
           placeholder="Personal Access Token (ghp_…)"
+          onkeydown="if (event.key === 'Enter') runExport('docx');"
         />
-        <input
-          type="text"
-          id="tagInput"
-          placeholder="Label GitHub (optionnel — filtre les issues)"
-          onkeydown="if (event.key === 'Enter') confirmExport('docx');"
-        />
-        <div class="modal-actions">
-          <button class="btn-primary" onclick="confirmExport('md')">Markdown</button>
-          <button class="btn-primary" onclick="confirmExport('docx')">Word (.docx)</button>
+        <div class="actions">
+          <button class="btn-export" id="btnMd" onclick="runExport('md')">Markdown</button>
+          <button class="btn-export" id="btnDocx" onclick="runExport('docx')">Word (.docx)</button>
         </div>
       </div>
+      <div class="status-bar" id="statusBar"></div>
     </div>
 
     <script>
@@ -291,77 +188,60 @@
           el.className = "status-bar" + (cls ? " " + cls : "");
         }
 
-        function closeAllModals() {
-          document.querySelectorAll(".modal-bg").forEach((m) => m.classList.remove("visible"));
-        }
-
-        // ── Modal ─────────────────────────────────────────────────────────────
-        function showConfigModal() {
-          closeAllModals();
-          document.getElementById("urlInput").value = localStorage.getItem("lastUrl") || "";
-          document.getElementById("patInput").value = localStorage.getItem("lastPat") || "";
-          document.getElementById("tagInput").value = localStorage.getItem("lastTag") || "";
-          document.getElementById("configModal").classList.add("visible");
-          setTimeout(() => document.getElementById("urlInput").focus(), 50);
-        }
-
-        function confirmExport(format) {
-          const url = document.getElementById("urlInput").value.trim();
-          const pat = document.getElementById("patInput").value.trim();
-          const tag = document.getElementById("tagInput").value.trim();
-          if (!url) { document.getElementById("urlInput").focus(); return; }
-          if (!pat) { document.getElementById("patInput").focus(); return; }
-          localStorage.setItem("lastUrl", url);
-          localStorage.setItem("lastPat", pat);
-          localStorage.setItem("lastTag", tag);
-          closeAllModals();
-          runExport(url, pat, tag, format);
+        function setButtonsDisabled(disabled) {
+          document.getElementById("btnMd").disabled = disabled;
+          document.getElementById("btnDocx").disabled = disabled;
         }
 
         // ── Export ────────────────────────────────────────────────────────────
-        async function runExport(url, pat, tag, format) {
-          document.getElementById("startBtn").style.display = "none";
-          document.getElementById("resultBox").classList.remove("visible");
-          document.getElementById("idleMsg").style.display = "";
+        async function runExport(format) {
+          const url = document.getElementById("urlInput").value.trim();
+          const pat = document.getElementById("patInput").value.trim();
+          if (!url) {
+            document.getElementById("urlInput").focus();
+            return;
+          }
+          if (!pat) {
+            document.getElementById("patInput").focus();
+            return;
+          }
+          localStorage.setItem("lastUrl", url);
+          localStorage.setItem("lastPat", pat);
+
+          setButtonsDisabled(true);
           setStatus("Chargement…", "loading");
 
           window.electronAPI.onProgress((msg) => setStatus(msg, "loading"));
 
           try {
-            const result = await window.electronAPI.exportProject(url, pat, tag, format);
+            const result = await window.electronAPI.exportProject(url, pat, format);
 
             if (result.success) {
               setStatus(
-                `${result.count} issue${result.count !== 1 ? "s" : ""} exportée${result.count !== 1 ? "s" : ""}.`,
+                `✓ ${result.count} issue${result.count !== 1 ? "s" : ""} exportée${result.count !== 1 ? "s" : ""} → ${result.filePath}`,
                 "success"
               );
-              document.getElementById("idleMsg").style.display = "none";
-              document.getElementById("resultTitle").textContent =
-                `✓ ${result.count} issue${result.count !== 1 ? "s" : ""} exportée${result.count !== 1 ? "s" : ""}`;
-              document.getElementById("resultPath").textContent = result.filePath;
-              document.getElementById("resultBox").classList.add("visible");
             } else if (result.canceled) {
               setStatus("Export annulé.", "");
             } else {
               setStatus(`Erreur : ${result.error}`, "error");
-              showConfigModal();
             }
           } catch (err) {
             setStatus(`Erreur : ${err.message}`, "error");
-            showConfigModal();
           } finally {
             window.electronAPI.removeProgressListeners();
-            document.getElementById("startBtn").style.display = "";
+            setButtonsDisabled(false);
           }
         }
 
         // Expose to HTML attributes
-        window.showConfigModal = showConfigModal;
-        window.confirmExport = confirmExport;
+        window.runExport = runExport;
 
-        // ── Auto-start ────────────────────────────────────────────────────────
+        // ── Init ──────────────────────────────────────────────────────────────
         document.addEventListener("DOMContentLoaded", () => {
-          showConfigModal();
+          document.getElementById("urlInput").value = localStorage.getItem("lastUrl") || "";
+          document.getElementById("patInput").value = localStorage.getItem("lastPat") || "";
+          document.getElementById("urlInput").focus();
         });
       })();
     </script>
