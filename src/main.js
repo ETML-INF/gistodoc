@@ -194,21 +194,50 @@ async function fetchProjectData(url, pat, onProgress) {
 
 // ── Markdown formatter ────────────────────────────────────────────────────────
 
-function applyImagesMarkdown(body, images) {
-  let result = body.replace(/(<img\b[^>]*?)src="(https?:\/\/[^"]+)"/g, (match, prefix, url) => {
+const IMAGE_EXTENSIONS_BY_CONTENT_TYPE = {
+  "image/png": "png",
+  "image/jpeg": "jpg",
+  "image/jpg": "jpg",
+  "image/gif": "gif",
+  "image/webp": "webp",
+  "image/svg+xml": "svg",
+  "image/bmp": "bmp"
+};
+
+function extensionFromContentType(contentType) {
+  const key = contentType?.split(";")[0].trim().toLowerCase();
+  return IMAGE_EXTENSIONS_BY_CONTENT_TYPE[key] || "png";
+}
+
+function applyImagesMarkdown(body, images, issueNumber, imagesDir, imagesFolderName, savedImages) {
+  let localIndex = 0;
+  const resolveUrl = (url) => {
+    if (savedImages.has(url)) return savedImages.get(url);
     const img = images.get(url);
-    if (!img) return match;
+    if (!img) return null;
+    localIndex += 1;
+    const ext = extensionFromContentType(img.contentType);
+    const filename = `us${issueNumber}-${localIndex}.${ext}`;
+    fs.writeFileSync(path.join(imagesDir, filename), img.buffer);
+    const ref = `${imagesFolderName}/${filename}`;
+    savedImages.set(url, ref);
+    return ref;
+  };
+
+  let result = body.replace(/(<img\b[^>]*?)src="(https?:\/\/[^"]+)"/g, (match, prefix, url) => {
+    const ref = resolveUrl(url);
+    if (!ref) return match;
     const clean = prefix.replace(/\s*(width|height)="[^"]*"/gi, "");
-    return `${clean}src="data:${img.contentType};base64,${img.buffer.toString("base64")}"`;
+    return `${clean}src="${ref}"`;
   });
   result = result.replace(/!\[([^\]]*)\]\((https?:\/\/[^)]+)\)/g, (match, alt, url) => {
-    const img = images.get(url);
-    return img ? `![${alt}](data:${img.contentType};base64,${img.buffer.toString("base64")})` : match;
+    const ref = resolveUrl(url);
+    return ref ? `![${alt}](${ref})` : match;
   });
   return result;
 }
 
-function formatMarkdown({ projectTitle, url, fetchedAt, issues }) {
+function formatMarkdown({ projectTitle, url, fetchedAt, issues }, filePath) {
   const date = new Date(fetchedAt).toLocaleDateString("fr-CH", {
     day: "2-digit",
     month: "2-digit",
@@ -223,9 +252,21 @@ function formatMarkdown({ projectTitle, url, fetchedAt, issues }) {
     "---",
     ""
   ];
+
+  const hasImages = issues.some((issue) => issue.images && issue.images.size > 0);
+  const imagesFolderName = `${path.basename(filePath, path.extname(filePath))}_images`;
+  const imagesDir = path.join(path.dirname(filePath), imagesFolderName);
+  if (hasImages) fs.mkdirSync(imagesDir, { recursive: true });
+  const savedImages = new Map();
+
   for (const issue of issues) {
     lines.push(`## #${issue.number} — ${issue.title}`, "");
-    if (issue.body.trim()) lines.push(applyImagesMarkdown(issue.body, issue.images).trim(), "");
+    if (issue.body.trim()) {
+      lines.push(
+        applyImagesMarkdown(issue.body, issue.images, issue.number, imagesDir, imagesFolderName, savedImages).trim(),
+        ""
+      );
+    }
     lines.push("---", "");
   }
   return lines.join("\n");
@@ -425,7 +466,7 @@ app.whenReady().then(() => {
         const buffer = await buildDocxDocument(data);
         fs.writeFileSync(filePath, buffer);
       } else {
-        fs.writeFileSync(filePath, formatMarkdown(data), "utf8");
+        fs.writeFileSync(filePath, formatMarkdown(data, filePath), "utf8");
       }
 
       return { success: true, filePath, count: data.issues.length };
